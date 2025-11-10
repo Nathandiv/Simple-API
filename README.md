@@ -143,6 +143,7 @@ Why We Need Them:
 Separation of Concerns: Code stays clean; configs can be environment-specific (e.g., application-dev.yml for local, application-prod.yml for production).
 Flexibility: Override via command-line (java -jar app.jar --server.port=9090), environment variables, or profiles.
 Portability: No hard-coded values; easy to deploy across environments.
+
 When to Use:
 
 Use application.properties for simple projects with few, flat configs.
@@ -379,6 +380,46 @@ In your Project Terminal RUN
 ./mvnw clean package          → JAR appears in `target/`
 
 → Output: target/sipmle-Api-0.0.1-SNAPSHOT.jar (executable, fat JAR with all deps).
+
+NB for advance purpose FYI
+
+### Multiple SNAPSHOT JARs (Archiving)
+
+**Yes – you can keep multiple SNAPSHOT JARs**, but **not automatically**.
+
+Maven overwrites the same `0.0.1-SNAPSHOT.jar` on every build.
+
+**To archive different versions:**
+
+1. **Update `pom.xml`**
+   ```xml
+   <version>0.0.2-SNAPSHOT</version>
+2 Build `./mvnw clean package` → `target/simple-Api-0.0.2-SNAPSHOT.jar` (old ones stay)
+3. Repeat for `0.0.3-SNAPSHOT`
+
+Result in target/:
+simple-Api-0.0.1-SNAPSHOT.jar
+simple-Api-0.0.2-SNAPSHOT.jar
+simple-Api-0.0.3-SNAPSHOT.jar
+
+Run any JAR:
+java -jar target/simple-Api-0.0.2-SNAPSHOT.jar
+
+Automate version bump (recommended):
+Add to pom.xml under <build><plugins>:
+
+<plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>versions-maven-plugin</artifactId>
+    <version>2.16.2</version>
+</plugin>
+
+Then:
+
+Run this in your Project Terminal 
+./mvnw versions:set -DnewVersion=0.0.2-SNAPSHOT
+./mvnw clean package
+   
 
 ## 3.10 Run JAR Anywhere
 
